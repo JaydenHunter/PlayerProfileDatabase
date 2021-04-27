@@ -3,70 +3,143 @@
 #include "DataManager.h"
 #include "PlayerData.h"
 
+#define MEM_OFFSET 4
+#define FILE_DIR "data.dat"
 
 DataManager::DataManager()
 {
-	PlayerData* storedData = LoadProfile();
+	entries = 0;
+	storedData = LoadAll();
 }
 
-PlayerData* DataManager::LoadProfile()
+PlayerData DataManager::LoadProfile(int entryPosition)
 {
-	return nullptr;
+	PlayerData data;
+
+	std::fstream file;
+	file.open(FILE_DIR, std::ios_base::in | std::ios_base::binary);
+
+	if (file.is_open())
+	{
+
+		int offset = MEM_OFFSET + (entryPosition * sizeof(PlayerData));
+		file.seekg(offset, std::ios::beg);
+
+		if (!file.eof())
+			file.read((char*)&data, sizeof(PlayerData));
+
+		file.close();
+
+	}
+	return data;
 }
 
 PlayerData* DataManager::LoadAll()
 {
-	PlayerData** data = new PlayerData*[1];
-
 	std::fstream file;
-	file.open("data.dat", std::ios_base::in | std::ios_base::binary);
+	file.open(FILE_DIR, std::ios_base::in | std::ios_base::binary);
+
 	if (file.is_open())
 	{
-		int* count;
-		//file.read((char*)&count, sizeof(int));
+		file.read((char*)&entries, sizeof(int));
 
-		data = new PlayerData*[3];
-		data[0] = new PlayerData();
-		data[1] = new PlayerData();
-		data[2] = new PlayerData();
-		int counter = 0;
-		while (!file.eof() && file.peek() != EOF)
+		PlayerData* data = new PlayerData[entries];
+
+		for (int i = 0; i < entries; i++)
 		{
-			PlayerData* dataFile;
-			file.read((char*)&dataFile, sizeof(PlayerData));
-			//std::cout << *data[counter]->GetName() << std::endl;
-			data[counter] = dataFile;
-			counter++;
+			if (!file.eof())
+			{
+				PlayerData dataFile;
+				file.read((char*)&dataFile, sizeof(PlayerData));
+
+				data[i] = dataFile;
+			}
 		}
-		
+
+		file.close();
+		if (data != nullptr)
+			return data;
 	}
-	file.close();
-	if (data != nullptr)
-		return *data;
-	else
-		return nullptr;
+	return nullptr;
 }
 
-void DataManager::SaveProfile(PlayerData playerData)
-{
-
-}
-
-void DataManager::SaveAll(PlayerData* playerData, int count)
+void DataManager::SaveProfile(PlayerData playerData, int entryPosition)
 {
 	std::fstream file;
-	file.open("data.dat", std::ios_base::out | std::ios_base::binary);
+	file.open(FILE_DIR, std::ios_base::out | std::ios_base::binary | std::ios_base::in);
+
+	if (file.is_open())
+	{
+
+		int offset = MEM_OFFSET + ((entryPosition) * sizeof(PlayerData));
+		file.seekp(offset, std::ios::beg);
+
+		//if (!file.eof())
+		file.write((char*)&playerData, sizeof(PlayerData));
+
+		file.close();
+
+	}
+}
+
+void DataManager::SaveAll(PlayerData** playerData, int count)
+{
+	std::fstream file;
+	file.open(FILE_DIR, std::ios_base::out | std::ios_base::binary);
+
 	if (file.is_open())
 	{
 		//Store count at start for reading out in load
-		//file.write((char*)&count, sizeof(int));
+		file.write((char*)&count, sizeof(int));
 
 		//Loop through all player data thats been saved
 		for (int i = 0; i < count; i++)
 		{
-			file.write((char*)&playerData[i], sizeof(PlayerData));
+			file.write((char*)playerData[i], sizeof(PlayerData));
+
 		}
-		
+		file.close();
 	}
-	file.close();
+}
+
+void DataManager::AddFile(PlayerData playerData)
+{
+	std::fstream file;
+	file.open(FILE_DIR, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
+	if (file.is_open())
+	{
+		if (entries == 0)
+		{
+			file.write((char*)&entries, sizeof(int));
+		}
+
+		file.write((char*)&playerData, sizeof(PlayerData));
+		file.close();
+		entries++;
+		ModifyEntryCount(entries);
+	}
+	storedData = LoadAll();
+
+}
+void DataManager::ModifyEntryCount(int newCount)
+{
+	std::fstream file;
+	file.open(FILE_DIR, std::ios_base::out | std::ios_base::binary | std::ios_base::in );
+	if (file.is_open())
+	{
+		file.write((char*)&newCount, sizeof(int));
+		file.close();
+	}
+}
+const int DataManager::EntryCount() {
+	return entries;
+}
+
+void DataManager::PrintAll()
+{
+	storedData = LoadAll();
+	for (int i = 0; i < entries; i++)
+	{
+		std::cout << "Record Number " << (i + 1) << ": Name: " << storedData[i].GetName() << " \t| Highscore: " << storedData[i].GetHighscore() << std::endl;
+	}
 }

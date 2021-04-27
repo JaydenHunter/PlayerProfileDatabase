@@ -3,7 +3,7 @@ class PlayerData
 {
 public:
 	PlayerData();
-	char* GetName();
+	const char* GetName() ;
 	void SetName(char* name);
 
 	int GetHighscore();

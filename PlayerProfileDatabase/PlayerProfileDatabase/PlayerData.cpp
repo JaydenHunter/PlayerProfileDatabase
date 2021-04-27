@@ -7,7 +7,7 @@ PlayerData::PlayerData()
 	highscore = 0;
 }
 
-char* PlayerData::GetName()
+const char* PlayerData::GetName()
 {
 	return name;
 }
