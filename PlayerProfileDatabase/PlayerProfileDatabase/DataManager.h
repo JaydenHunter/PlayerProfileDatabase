@@ -11,6 +11,7 @@ public:
 	void SaveAll(PlayerData** playerData, int count);
 	void AddFile(PlayerData playerData);
 	void PrintAll();
+	void SortData();
 	const int EntryCount();
 
 private:

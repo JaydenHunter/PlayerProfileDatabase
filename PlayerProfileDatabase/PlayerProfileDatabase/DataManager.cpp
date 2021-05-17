@@ -57,6 +57,8 @@ PlayerData* DataManager::LoadAll()
 		}
 
 		file.close();
+
+
 		if (data != nullptr)
 			return data;
 	}
@@ -84,6 +86,7 @@ void DataManager::SaveProfile(PlayerData playerData, int entryPosition)
 
 void DataManager::SaveAll(PlayerData** playerData, int count)
 {
+
 	std::fstream file;
 	file.open(FILE_DIR, std::ios_base::out | std::ios_base::binary);
 
@@ -119,7 +122,7 @@ void DataManager::AddFile(PlayerData playerData)
 		ModifyEntryCount(entries);
 	}
 	storedData = LoadAll();
-
+	SortData();
 }
 void DataManager::ModifyEntryCount(int newCount)
 {
@@ -138,8 +141,31 @@ const int DataManager::EntryCount() {
 void DataManager::PrintAll()
 {
 	storedData = LoadAll();
+	SortData();
 	for (int i = 0; i < entries; i++)
 	{
 		std::cout << "Record Number " << (i + 1) << ": Name: " << storedData[i].GetName() << " \t| Highscore: " << storedData[i].GetHighscore() << std::endl;
 	}
+}
+
+void DataManager::SortData()
+{
+	PlayerData temp;
+
+	if (storedData)
+	{
+		for (int i = 0; i < entries; i++)
+		{
+			for (int j = 0; j < entries; j++)
+			{
+				if (strcmp(storedData[j].GetName(), storedData[i].GetName()) > 0)
+				{
+					memcpy(&temp, &storedData[j], sizeof(PlayerData));
+					memcpy(&storedData[j], &storedData[i], sizeof(PlayerData));
+					memcpy(&storedData[i], &temp, sizeof(PlayerData));
+				}
+			}
+		}
+	}
+
 }

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Database">
+      <UniqueIdentifier>{4400b475-be15-412c-a02d-deb04291eb34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database\PlayerData">
+      <UniqueIdentifier>{aae71d2b-7414-406e-8e15-bcc2587117ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database\DataHandler">
+      <UniqueIdentifier>{986f6ef4-98ee-45e5-91ad-b7d874f1eadb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Menu">
+      <UniqueIdentifier>{06708267-5961-40d3-aa11-bf9e72b884b4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PlayerData.h">
+      <Filter>Database\PlayerData</Filter>
+    </ClInclude>
+    <ClInclude Include="DataHandler.h">
+      <Filter>Database\DataHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Menu</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PlayerData.cpp">
+      <Filter>Database\PlayerData</Filter>
+    </ClCompile>
+    <ClCompile Include="DataHandler.cpp">
+      <Filter>Database\DataHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+</Project>

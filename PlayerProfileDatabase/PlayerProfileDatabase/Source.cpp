@@ -1,4 +1,5 @@
 #include <iostream>
+#include <crtdbg.h>
 #include "DataManager.h"
 #include "PlayerData.h"
 
@@ -18,6 +19,7 @@ DataManager* dataManager = new DataManager();
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//TestingStuffFunction();
 	cout << "Welcome to the Player Profile Database!\n";
 
@@ -94,6 +96,7 @@ void AddFileMenu()
 
 	dataManager->AddFile(newEntry);
 	dataManager->LoadAll();
+	dataManager->SortData();
 }
 
 void ModifyAFile()
@@ -117,6 +120,7 @@ void ModifyAFile()
 	entry.SetHighscore(highscore);
 
 	dataManager->SaveProfile(entry, entryNo);
+	dataManager->SortData();
 	cout << "\nEntry Saved\n";
 }
 
@@ -150,6 +154,7 @@ void DefaultData(DataManager* dataManager)
 
 
 	dataManager->SaveAll(defaultData, dataEntries);
+	dataManager->SortData();
 }
 
 void TestingStuffFunction()
