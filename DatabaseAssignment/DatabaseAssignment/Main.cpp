@@ -28,9 +28,8 @@ int main()
 		return -1;
 	}
 
-
 	DataHandler::Release();
-
+	
 	return 0;
 }
 

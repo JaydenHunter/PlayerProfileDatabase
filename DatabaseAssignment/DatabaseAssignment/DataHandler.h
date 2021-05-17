@@ -24,10 +24,10 @@ public:
 	static DataHandler* Get();
 	static void Create();
 	static void Release();
+	void ClearData();
 	
 private:
 	void SetEntryCount();
-	void ClearData();
 	void SortData();
 
 private:

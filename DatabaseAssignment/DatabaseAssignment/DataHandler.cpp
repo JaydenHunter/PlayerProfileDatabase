@@ -19,11 +19,8 @@ DataHandler::DataHandler()
 
 DataHandler::~DataHandler()
 {
-	if (storedData)
-	{
-		delete[] storedData;
-		storedData = nullptr;
-	}
+	//ClearData();
+	
 }
 
 PlayerData DataHandler::LoadProfile(int entryPosition)
@@ -200,10 +197,11 @@ void DataHandler::Create()
 
 void DataHandler::Release()
 {
-	if (DataHandler::handler)
+	if (!DataHandler::handler)
 		return;
-
+	DataHandler::handler->ClearData();
 	delete DataHandler::handler;
+	DataHandler::handler = nullptr;
 }
 
 void DataHandler::SetEntryCount()
@@ -227,8 +225,8 @@ void DataHandler::ClearData()
 		{
 			if (storedData[i])
 			{
-				/*	delete storedData[i];
-					storedData[i] = nullptr;*/
+				delete storedData[i];
+				storedData[i] = nullptr;
 			}
 		}
 

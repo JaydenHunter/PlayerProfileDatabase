@@ -20,15 +20,13 @@ void Menu::MenuLoop()
 {
 	while (running)
 	{
-		//system("cls");
 		cout << "\nWhat would you like to do?\n";
 		cout << "\t1. View All Records\n";
 		cout << "\t2. Add A Record\n";
-		cout << "\t3. Modify A Record\n";
-		cout << "\t4. Find A Record\n";
-		cout << "\t5. Exit\n";
+		cout << "\t3. Find A Record\n";
+		cout << "\t4. Exit\n";
 
-		switch (AskNumberRange("Enter an option (1-5): ", 1, 5))
+		switch (AskNumberRange("Enter an option (1-4): ", 1,4))
 		{
 		case 1:
 			PrintProfiles();
@@ -36,11 +34,9 @@ void Menu::MenuLoop()
 		case 2:
 			break;
 		case 3:
-			break;
-		case 4:
 			SearchProfile();
 			break;
-		case 5:
+		case 4:
 			running = false;
 			break;
 
@@ -48,10 +44,6 @@ void Menu::MenuLoop()
 	}
 }
 
-void Menu::PrintOptions()
-{
-	
-}
 
 void Menu::PrintProfiles()
 {
@@ -71,14 +63,48 @@ void Menu::SearchProfile()
 	char name[NAME_LENGTH];
 	strcpy_s(name, NAME_LENGTH, askName);
 	PlayerData* pData = DataHandler::Get()->SearchProfile(name);
+	system("cls");
 	if (pData != nullptr)
 	{
-		cout << "Player Found\n" << pData->GetName();
+		ProfileFoundMenu(pData);
 	}
 	else
 	{
 		cout << "Player not found!\n";
 	}
+}
+
+void Menu::EditProfile(PlayerData* pData)
+{
+	char* askName = AskString("Enter a name: ");
+	char name[NAME_LENGTH];
+	strcpy_s(name, NAME_LENGTH, askName);
+
+	int newHighscore = AskNumber("Enter a new highscore: ");
+	pData->SetName(name);
+	pData->SetHighscore(newHighscore);
+	DataHandler::Get()->SaveAllProfiles();
+}
+
+void Menu::ProfileFoundMenu(PlayerData* pData)
+{
+	
+	printf("Player Found: \n\tName: %s | Highscore: %i\n", pData->GetName(), pData->GetHighscore());
+	cout << "\n What would you like to do?";
+	cout << "\n1. Edit Player";
+	cout << "\n2. Return\n";
+
+	switch (AskNumberRange("Enter an option (1-2): ", 1, 2))
+	{
+	case 1:
+		EditProfile(pData);
+		break;
+	default:
+		system("cls");
+		break;
+
+	}
+
 }
 
 int Menu::AskNumberRange(const char* question, int min, int max)
@@ -100,7 +126,10 @@ int Menu::AskNumberRange(const char* question, int min, int max)
 
 int Menu::AskNumber(const char* question)
 {
-	return 0;
+	cout << question;
+	int number;
+	cin >> number;
+	return number;
 }
 
 char* Menu::AskString(const char* question)
