@@ -8,8 +8,12 @@
 #define PLAYER_SIZE sizeof(PlayerData)
 #define FILE_DIR "players.dat"
 
+//Singleton Reference
 DataHandler* DataHandler::handler = nullptr;
 
+//--------------------------------------
+// Constructor
+//--------------------------------------
 DataHandler::DataHandler()
 {
 	entryCount = 0;
@@ -17,26 +21,23 @@ DataHandler::DataHandler()
 	LoadAllProfiles();
 }
 
-DataHandler::~DataHandler()
-{
-	//ClearData();
-	
-}
-
+//--------------------------------------
+// Returns a profile from a given position in the file
+//--------------------------------------
 PlayerData DataHandler::LoadProfile(int entryPosition)
 {
-	if (entryPosition >= entryCount)
+	if (entryPosition >= entryCount || entryPosition < 0) //Check that the desired position is within range
 		return nullptr;
 
 	PlayerData pData;
 
 	std::fstream file;
 	file.open(FILE_DIR, std::ios_base::in | std::ios_base::binary);
-
+	//Open file and seek to position
+	//Read out data into a PlayerData class
 	if (file.is_open())
 	{
 		int offset = MEM_OFFSET + (entryPosition * PLAYER_SIZE);
-
 		file.seekg(offset, std::ios::beg);
 
 		if (!file.eof())
@@ -44,29 +45,33 @@ PlayerData DataHandler::LoadProfile(int entryPosition)
 
 		file.close();
 	}
-
 	return pData;
 }
 
+//--------------------------------------
+// Loads all profile data into the storedData
+//--------------------------------------
 void DataHandler::LoadAllProfiles()
 {
-	ClearData();
+	ClearData(); //Clear all current data that is stored
 
 	std::fstream file;
 
 	file.open(FILE_DIR, std::ios_base::in | std::ios_base::binary);
-
+	//Open up file and read in the player data
 	if (file.is_open())
 	{
+		//Get the amount of entries we need to load in
 		file.read((char*)&entryCount, sizeof(int));
 
+		//Initialize the PlayerData classes
 		storedData = new PlayerData * [entryCount];
 
 		for (int i = 0; i < entryCount; i++)
 		{
 			storedData[i] = new PlayerData();
 		}
-
+		//Loop through all entries and read them in
 		for (int i = 0; i < entryCount; i++)
 		{
 			if (!file.eof())
@@ -84,11 +89,15 @@ void DataHandler::LoadAllProfiles()
 	SortData();
 }
 
+//--------------------------------------
+// Saves a single profile in the file
+//--------------------------------------
 void DataHandler::SaveProfile(PlayerData* playerData, int entryPosition)
 {
 	std::fstream file;
 	file.open(FILE_DIR, std::ios_base::out | std::ios_base::binary | std::ios_base::in);
 
+	//Seek position in file and write to the data
 	if (file.is_open())
 	{
 		int offset = MEM_OFFSET + (entryPosition * PLAYER_SIZE);
@@ -99,6 +108,9 @@ void DataHandler::SaveProfile(PlayerData* playerData, int entryPosition)
 	}
 }
 
+//--------------------------------------
+// Saves all storedData profiles into the file
+//--------------------------------------
 void DataHandler::SaveAllProfiles()
 {
 	std::fstream file;
@@ -116,6 +128,9 @@ void DataHandler::SaveAllProfiles()
 	}
 }
 
+//--------------------------------------
+// Adds a new profile to file and reloads
+//--------------------------------------
 void DataHandler::AddProfile(PlayerData& playerData)
 {
 	std::fstream file;
@@ -123,30 +138,34 @@ void DataHandler::AddProfile(PlayerData& playerData)
 
 	if (file.is_open())
 	{
+		//Update entry count in file
 		entryCount++;
 		SetEntryCount();
 
+		//Reverse count for when profiles are reloaded
+		entryCount--;
 
 		file.write((char*)&playerData, PLAYER_SIZE);
 		file.close();
-
 	}
 
-	//LoadAllProfiles();
+	//Reload files into Stored Data
+	LoadAllProfiles();
 }
 
+//--------------------------------------
+// Searches for a specific profile in the stored data
+//--------------------------------------
 PlayerData* DataHandler::SearchProfile(const char* name)
 {
 	//Binary Search
 	int min = 0;
 	int max = entryCount - 1;
-	bool resultFound = false;
-	while (max > min)
+	while (min <= max)
 	{
 		int mid = (min + max) / 2;
-
-
 		char compName[NAME_LENGTH];
+
 		strcpy_s(compName, NAME_LENGTH, storedData[mid]->GetName());
 
 		if (strcmp(name, compName) == 0)
@@ -161,6 +180,9 @@ PlayerData* DataHandler::SearchProfile(const char* name)
 	return nullptr;
 }
 
+//--------------------------------------
+// Print out all Player Profiles to console
+//--------------------------------------
 void DataHandler::PrintAll()
 {
 
@@ -175,16 +197,25 @@ void DataHandler::PrintAll()
 	}
 }
 
+//--------------------------------------
+// Gets count of all entries
+//--------------------------------------
 const int DataHandler::GetEntryCount()
 {
 	return entryCount;
 }
 
+//--------------------------------------
+// Returns singleton Instance
+//--------------------------------------
 DataHandler* DataHandler::Get()
 {
 	return handler;
 }
 
+//--------------------------------------
+// Creates singleton instance if it hasn't been created
+//--------------------------------------
 void DataHandler::Create()
 {
 	if (DataHandler::handler)
@@ -194,6 +225,9 @@ void DataHandler::Create()
 
 }
 
+//--------------------------------------
+// Releases all memory that was occupied 
+//--------------------------------------
 void DataHandler::Release()
 {
 	if (!DataHandler::handler)
@@ -203,6 +237,9 @@ void DataHandler::Release()
 	DataHandler::handler = nullptr;
 }
 
+//--------------------------------------
+// Modify the count of entries in the file
+//--------------------------------------
 void DataHandler::SetEntryCount()
 {
 	std::fstream file;
@@ -216,6 +253,9 @@ void DataHandler::SetEntryCount()
 
 }
 
+//--------------------------------------
+// Clears up memory usage of the stored data
+//--------------------------------------
 void DataHandler::ClearData()
 {
 	if (storedData)
@@ -234,6 +274,9 @@ void DataHandler::ClearData()
 	}
 }
 
+//--------------------------------------
+// Sorts Player Profiles in ascending order by name
+//--------------------------------------
 void DataHandler::SortData()
 {
 	//Bubble Sort
@@ -244,10 +287,11 @@ void DataHandler::SortData()
 	{
 		for (int i = 0; i < entryCount - 1; i++)
 		{
+			char name1[NAME_LENGTH];
+			strcpy_s(name1, NAME_LENGTH, storedData[i]->GetName());
+
 			for (int j = i + 1; j < entryCount; j++)
 			{
-				char name1[NAME_LENGTH];
-				strcpy_s(name1, NAME_LENGTH, storedData[i]->GetName());
 				char name2[NAME_LENGTH];
 				strcpy_s(name2, NAME_LENGTH, storedData[j]->GetName());
 
@@ -262,6 +306,4 @@ void DataHandler::SortData()
 	}
 
 	SaveAllProfiles();
-
-
 }

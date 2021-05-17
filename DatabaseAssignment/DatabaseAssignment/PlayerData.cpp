@@ -1,6 +1,9 @@
 #include <iostream>
 #include "PlayerData.h"
 
+//--------------------------------------
+// Constructors
+//--------------------------------------
 PlayerData::PlayerData()
 {
 	strcpy_s(name, NAME_LENGTH, "default");
@@ -13,6 +16,9 @@ PlayerData::PlayerData(const char* name, int highscore)
 	this->highscore = highscore;
 }
 
+//--------------------------------------
+// Getters and Setters
+//--------------------------------------
 const char* PlayerData::GetName()
 {
 	return name;

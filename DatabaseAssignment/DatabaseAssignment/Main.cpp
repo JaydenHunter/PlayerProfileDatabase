@@ -8,15 +8,18 @@ void DefaultData();
 
 int main()
 {
+	//Check for memory leaks
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	//Set up data handler and Load profiles
 	try
 	{
 		DataHandler::Create();
+		DataHandler::Get()->LoadAllProfiles();
 	}
 	catch (...) { return -1; }
-	//DefaultData();
-	DataHandler::Get()->LoadAllProfiles();
+
+	//Start the main menu loop
 	try
 	{
 		Menu menu;
@@ -28,11 +31,16 @@ int main()
 		return -1;
 	}
 
+	//Release resources used
 	DataHandler::Release();
 	
 	return 0;
 }
 
+
+//--------------------------------------
+// Used for default data
+//--------------------------------------
 void DefaultData()
 {
 	const int dataEntries = 5;

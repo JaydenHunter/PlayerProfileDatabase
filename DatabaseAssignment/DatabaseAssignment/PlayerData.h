@@ -3,10 +3,11 @@
 class PlayerData
 {
 public:
-
+	//Constructors
 	PlayerData();
 	PlayerData(const char* name, int highscore = 0);
 
+	//Getters and Setters
 	const char* GetName();
 	void SetName(char* name);
 	
