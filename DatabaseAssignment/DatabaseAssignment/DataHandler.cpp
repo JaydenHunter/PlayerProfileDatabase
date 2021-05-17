@@ -145,7 +145,6 @@ PlayerData* DataHandler::SearchProfile(const char* name)
 	{
 		int mid = (min + max) / 2;
 
-		int result;
 
 		char compName[NAME_LENGTH];
 		strcpy_s(compName, NAME_LENGTH, storedData[mid]->GetName());
